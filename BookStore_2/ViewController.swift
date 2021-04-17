@@ -35,6 +35,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func loadBooks() -> [Book] {
         let fetchRequest: NSFetchRequest<Book> = Book.fetchRequest()
+        let titleSort: NSSortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+        fetchRequest.sortDescriptors = [titleSort]
         var result: [Book] = []
         
         do {
@@ -59,6 +61,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.textLabel?.text = book.title
         return cell
     }
-
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            let book: Book = loadBooks()[indexPath.row]
+            managedObjectContext.delete(book)
+            myTableView.reloadData()
+        }
+    }
 }
 
